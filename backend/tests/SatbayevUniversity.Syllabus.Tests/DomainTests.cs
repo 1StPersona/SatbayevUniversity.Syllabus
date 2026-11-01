@@ -98,7 +98,7 @@ public class DomainTests
     }
 
     [Theory]
-    [InlineData("Дайненко Евгения Александровна", "Дайненко Е.А.")]
+    [InlineData("Дайнеко Евгения Александровна", "Дайнеко Е.А.")]
     [InlineData("Иванов Иван", "Иванов И.")]
     [InlineData("Моноимя", "Моноимя")]
     public void Short_name(string full, string expected) => Assert.Equal(expected, WorkflowService.ShortName(full));

@@ -158,7 +158,7 @@ def main():
     check("одобрение кафедрой с протоколом", r.json()["status"] == "DepartmentApproved")
     r = wf("director", action="Approve")
     a = r.json()
-    check("утверждение директором, гриф заполнен", a["status"] == "Approved" and a["approvedByName"] == "Дайненко Е.А.")
+    check("утверждение директором, гриф заполнен", a["status"] == "Approved" and a["approvedByName"] == "Дайнеко Е.А.")
     check("в истории все 6 шагов (создан, отправлен, возвращён, отправлен, одобрен, утверждён)", len(a["history"]) == 6, len(a["history"]))
     check("обучающийся видит утверждённый силлабус", call("GET", f"/api/syllabi/{sid}", token=tokens["student"]).status == 200)
 

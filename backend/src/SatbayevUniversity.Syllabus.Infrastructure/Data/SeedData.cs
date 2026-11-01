@@ -118,7 +118,7 @@ public static class SeedData
         var inst = new Institute
         {
             Name = "Институт Автоматики и информационных технологий", ShortName = "АиИТ",
-            DirectorName = "Дайненко Евгения Александровна"
+            DirectorName = "Дайнеко Евгения Александровна"
         };
         var dept = new Department { Name = "Программная инженерия", HeadName = "Утегенова А.У.", HeadTitle = "И.о зав. кафедрой", Institute = inst };
         db.Add(dept);
@@ -130,7 +130,7 @@ public static class SeedData
         db.AddRange(research, method);
         await db.SaveChangesAsync();
 
-        var director = await CreateUserAsync(users, "director@esyllabus.local", DemoPassword, "Дайненко Евгения Александровна",
+        var director = await CreateUserAsync(users, "director@esyllabus.local", DemoPassword, "Дайнеко Евгения Александровна",
             "PhD, ассоциированный профессор", dept.Id, null, Roles.Director, Roles.Teacher);
         director.InstituteId = inst.Id;
         await users.UpdateAsync(director);
@@ -156,7 +156,7 @@ public static class SeedData
     {
         var teacher = new TeacherInfo
         {
-            FullName = "Дайненко Евгения Александровна",
+            FullName = "Дайнеко Евгения Александровна",
             Regalia = "PhD, ассоциированный профессор",
             Office = "ККЦ, 401 кабинет",
             OfficeHours = "понедельник – пятница, 15:00 – 17:00",
@@ -176,8 +176,8 @@ public static class SeedData
             LatePolicy = Texts.LatePolicy, AcademicPolicy = Texts.AcademicPolicy,
             ProtocolNumber = "11", ProtocolDate = new DateOnly(2026, 6, 22),
             HeadOfDepartmentName = "Утегенова А.У.", HeadOfDepartmentTitle = "И.о зав. кафедрой",
-            CompilerName = "Дайненко Е.А.", AgreedBy = "Маденова С.А.\nЖумагалиева А.С.",
-            ApprovedByName = "Дайненко Е.А.", ApprovedByTitle = "Директор института АиИТ", ApprovedDate = new DateOnly(2026, 6, 24),
+            CompilerName = "Дайнеко Е.А.", AgreedBy = "Маденова С.А.\nЖумагалиева А.С.",
+            ApprovedByName = "Дайнеко Е.А.", ApprovedByTitle = "Директор института АиИТ", ApprovedDate = new DateOnly(2026, 6, 24),
             Status = SyllabusStatus.Approved, AuthorId = author.Id, WeeksCount = 15,
             CreatedAt = new DateTime(2026, 6, 10, 6, 0, 0, DateTimeKind.Utc), UpdatedAt = new DateTime(2026, 6, 24, 9, 0, 0, DateTimeKind.Utc),
         };

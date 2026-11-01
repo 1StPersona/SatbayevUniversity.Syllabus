@@ -178,7 +178,7 @@ public class ApiTests : IClassFixture<ApiFactory>
         var approved = await (await Wf(director, new { action = "Approve" })).Content.ReadFromJsonAsync<JsonObject>();
         Assert.Equal("Approved", approved!["status"]!.GetValue<string>());
         Assert.Equal("7", approved["protocolNumber"]!.GetValue<string>());
-        Assert.Equal("Дайненко Е.А.", approved["approvedByName"]!.GetValue<string>());
+        Assert.Equal("Дайнеко Е.А.", approved["approvedByName"]!.GetValue<string>());
 
         // Студент программы 7M06101 видит утверждённый силлабус и может скачать DOCX
         Assert.Equal(HttpStatusCode.OK, (await student.GetAsync($"/api/syllabi/{id}")).StatusCode);

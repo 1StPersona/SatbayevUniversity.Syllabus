@@ -142,7 +142,7 @@ public class WorkflowService
             u.FullName, u.UserId, Title(req.Action), s.Id, from, to);
     }
 
-    /// <summary>«Дайненко Евгения Александровна» → «Дайненко Е.А.»</summary>
+    /// <summary>«Дайнеко Евгения Александровна» → «Дайнеко Е.А.»</summary>
     public static string ShortName(string fullName)
     {
         var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);

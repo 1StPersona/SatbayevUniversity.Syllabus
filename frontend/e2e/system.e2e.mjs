@@ -173,7 +173,7 @@ await step('директор', async () => {
   await page.click('[data-test=wf-confirm]');
   await page.waitForSelector('.badge:has-text("Утверждён")');
   check('утверждён директором', true);
-  check('гриф «УТВЕРЖДАЮ» заполнен', (await page.textContent('.tp-approve')).includes('Дайненко Е.А.'));
+  check('гриф «УТВЕРЖДАЮ» заполнен', (await page.textContent('.tp-approve')).includes('Дайнеко Е.А.'));
   await shot(page, '07-approved');
 
   const [download] = await Promise.all([page.waitForEvent('download'), page.click('text=Скачать DOCX')]);
