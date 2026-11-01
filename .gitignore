@@ -1,8 +1,14 @@
+# backend (.NET)
 bin/
 obj/
 logs/
 App_Data/
 *.user
 .vs/
-.env
 TestResults/
+# frontend (Angular) — подробности в frontend/.gitignore
+node_modules/
+dist/
+.angular/
+# секреты окружения
+.env

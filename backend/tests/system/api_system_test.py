@@ -2,7 +2,7 @@
 """
 Системный тест API на поднятом стеке docker compose (через nginx).
 Только стандартная библиотека Python. Запуск:
-    python3 tests/system/api_system_test.py http://localhost:8080
+    python3 backend/tests/system/api_system_test.py http://localhost:8080
 Ожидает демо-данные (SEED_DEMO_DATA=true) и пароль демо-пользователей Demo123!.
 """
 import io

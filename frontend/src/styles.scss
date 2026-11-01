@@ -1,0 +1,85 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* ---- Тема (цвета в переменных — для единого стиля с другими модулями университета) ---- */
+:root {
+  --app-primary: #0b3d91;
+  --app-primary-dark: #082c69;
+  --app-accent: #f2a900;
+  --app-bg: #f4f6fa;
+  --bs-primary: var(--app-primary);
+  --bs-primary-rgb: 11, 61, 145;
+  --bs-link-color: var(--app-primary);
+  --bs-link-color-rgb: 11, 61, 145;
+}
+html { font-size: 15px; }
+body { background: var(--app-bg); min-height: 100vh; }
+app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+app-shell main { flex: 1; }
+.btn-primary { --bs-btn-bg: var(--app-primary); --bs-btn-border-color: var(--app-primary); --bs-btn-hover-bg: var(--app-primary-dark); --bs-btn-hover-border-color: var(--app-primary-dark); --bs-btn-active-bg: var(--app-primary-dark); --bs-btn-disabled-bg: var(--app-primary); }
+.btn-outline-primary { --bs-btn-color: var(--app-primary); --bs-btn-border-color: var(--app-primary); --bs-btn-hover-bg: var(--app-primary); --bs-btn-hover-border-color: var(--app-primary); --bs-btn-active-bg: var(--app-primary); }
+.progress-bar { background-color: var(--app-primary); }
+.nav-pills { --bs-nav-pills-link-active-bg: var(--app-primary); }
+.app-navbar { background: var(--app-primary); border-bottom: 3px solid var(--app-accent); }
+.brand-mark { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 6px; background: #fff; color: var(--app-primary); font-weight: 800; }
+.brand-mark-dark { background: var(--app-primary); color: #fff; }
+.app-footer { border-top: 1px solid #e3e6ee; background: #fff; }
+.stat-card { border: 0; box-shadow: 0 1px 3px rgba(16, 24, 40, .08); transition: transform .1s; }
+.stat-card:hover { transform: translateY(-2px); }
+.stat-value { font-size: 1.9rem; font-weight: 700; line-height: 1.1; }
+.card { border-color: #e3e6ee; }
+.pre-line { white-space: pre-line; }
+.section-nav .list-group-item { border-left: 3px solid transparent; }
+.section-nav .list-group-item:hover { border-left-color: var(--app-accent); }
+.issue-list { max-height: 220px; overflow: auto; }
+section[id] { scroll-margin-top: 1rem; }
+.assessment-edit input.pts { width: 54px; padding-left: 4px; padding-right: 2px; }
+.assessment-edit td, .assessment-edit th { padding: 2px; }
+.competency-edit textarea { min-width: 150px; font-size: .8rem; }
+.calendar-edit textarea { min-width: 160px; }
+.login-wrap { max-width: 440px; margin: 6vh auto; padding: 0 16px; }
+.toast-stack { position: fixed; right: 16px; bottom: 16px; z-index: 2000; width: min(420px, calc(100vw - 32px)); }
+.modal-backdrop { z-index: 1040; }
+.modal { z-index: 1050; }
+
+/* ---- Документ силлабуса ---- */
+.syllabus-doc { font-family: "Times New Roman", Times, serif; font-size: 1.07rem; color: #111; max-width: 900px; margin: 0 auto; }
+.syllabus-doc h2 { font-size: 1.1rem; font-weight: 700; margin: 1.4rem 0 .6rem; padding-left: 2rem; }
+.syllabus-doc h3 { font-size: 1.05rem; font-weight: 700; margin: .6rem 0 .3rem; padding-left: 2rem; }
+.syllabus-doc p { margin-bottom: .4rem; text-align: justify; }
+.syllabus-doc .indent { text-indent: 2rem; }
+.syllabus-doc ul.dash { list-style: none; padding-left: 0; margin-bottom: .5rem; }
+.syllabus-doc ul.dash li { text-align: justify; }
+.syllabus-doc ul.dash li::before { content: "– "; }
+.syllabus-doc .teacher-contacts { margin-bottom: .6rem; }
+.doc-table { width: 100%; border-collapse: collapse; margin-bottom: .6rem; }
+.doc-table th, .doc-table td { border: 1px solid #000; padding: 3px 5px; vertical-align: top; }
+.doc-table th { background: #e6e6e6; text-align: center; vertical-align: middle; font-weight: 700; }
+.doc-table tr.milestone td { background: #fafafa; }
+.small-table { font-size: .85rem; }
+.assessment-table td, .assessment-table th { padding: 2px 3px; }
+.title-page { text-align: center; padding: 1rem 0 2rem; border-bottom: 1px dashed #bbb; margin-bottom: 1.5rem; }
+.tp-university { font-size: 1.5rem; font-weight: 700; letter-spacing: .03em; margin-bottom: 1rem; color: var(--app-primary); }
+.tp-approve { text-align: left; margin: 2rem 0 2.5rem 55%; }
+.tp-center { margin: 2rem 0 3rem; }
+.tp-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 1rem; }
+.tp-city { margin-top: 2rem; }
+.signatures { margin-top: 2rem; }
+.sign-table { width: 100%; margin-top: 1rem; }
+.sign-table td { padding: .6rem .25rem; width: 33%; }
+.sign-table .sign-line { border-bottom: 1px solid #000; }
+.doc-footer { display: none; }
+.print-page { background: #fff; }
+.print-header { font-family: "Times New Roman", serif; font-size: 9pt; text-align: center; text-transform: uppercase; }
+
+@media print {
+  @page { size: A4; margin: 15mm 12mm 15mm 20mm; }
+  body { background: #fff; }
+  .no-print { display: none !important; }
+  .syllabus-doc { max-width: none; font-size: 12pt; }
+  .title-page { border: 0; min-height: 250mm; page-break-after: always; display: flex; flex-direction: column; }
+  .tp-city { margin-top: auto; }
+  .doc-table tr { page-break-inside: avoid; }
+  .syllabus-doc h2 { page-break-after: avoid; }
+  .tp-university { color: #000; }
+  a { color: #000; text-decoration: none; }
+}

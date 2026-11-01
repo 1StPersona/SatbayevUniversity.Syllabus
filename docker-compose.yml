@@ -1,6 +1,5 @@
 # Электронный силлабус + УМКД: MS SQL Server + API (.NET 8) + Angular (nginx).
 # Запуск:  cp .env.example .env  (задать пароли/ключи)  &&  docker compose up -d --build
-# Клиент ожидается в соседнем каталоге ../SatbayevUniversity.Syllabus.Web.Client (переменная CLIENT_DIR).
 name: satbayev-syllabus
 
 services:
@@ -22,7 +21,7 @@ services:
     restart: unless-stopped
 
   api:
-    build: .
+    build: ./backend
     image: satbayev-syllabus-api:latest
     depends_on:
       mssql:
@@ -42,7 +41,7 @@ services:
     restart: unless-stopped
 
   web:
-    build: ${CLIENT_DIR:-../SatbayevUniversity.Syllabus.Web.Client}
+    build: ./frontend
     image: satbayev-syllabus-web:latest
     depends_on:
       api:
