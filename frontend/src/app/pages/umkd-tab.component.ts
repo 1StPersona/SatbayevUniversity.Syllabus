@@ -19,11 +19,14 @@ import { fmt, ModalComponent, UmkdProgressComponent } from '../shared/ui';
         @if (auth.isStaff()) { <div class="small text-muted">Обязательных компонентов принято: {{ u.progress.done }} из {{ u.progress.total }}</div> }
       </div>
       <div class="d-flex gap-2">
-        @if (u.canManage) { <button class="btn btn-primary btn-sm" (click)="openUpload()" data-test="umkd-add">+ Добавить материал</button> }
+        @if (u.canUpload) { <button class="btn btn-primary btn-sm" (click)="openUpload()" data-test="umkd-add">+ Загрузить материал</button> }
         <button class="btn btn-outline-secondary btn-sm" (click)="api.umkdZip(syllabusId())">Скачать УМКД (ZIP)</button>
       </div>
     </div>
     @if (auth.isStaff()) { <div class="mb-3"><app-umkd-progress [value]="u.progress" /></div> }
+    @if (auth.isStaff() && !u.canUpload) {
+      <div class="alert alert-light border small py-2">Загружать материалы могут преподаватели кафедры этой дисциплины, заведующий кафедрой и директор института.</div>
+    }
 
     <div class="list-group">
       @for (c of u.components; track c.type.id) {
@@ -40,7 +43,8 @@ import { fmt, ModalComponent, UmkdProgressComponent } from '../shared/ui';
               @if (c.type.isSyllabus) {
                 <a href="" (click)="$event.preventDefault(); api.docx(syllabusId())">Силлабус (DOCX)</a>
               } @else if (!c.materials.length) {
-                <div class="text-muted small">Материалы не загружены.</div>
+                <div class="text-muted small">Материалы не загружены.
+                  @if (u.canUpload) { <a href="" (click)="$event.preventDefault(); openUpload(c.type.id)">Загрузить</a> }</div>
               } @else {
                 @for (m of c.materials; track m.id) {
                   <div class="border rounded p-2 mb-2">
@@ -61,8 +65,8 @@ import { fmt, ModalComponent, UmkdProgressComponent } from '../shared/ui';
                           <div class="mt-2 d-flex gap-1 justify-content-end flex-wrap">
                             @if (u.canReview && m.reviewStatus !== 'Accepted') { <button class="btn btn-sm btn-outline-success" (click)="accept(m)">Принять</button> }
                             @if (u.canReview) { <button class="btn btn-sm btn-outline-danger" (click)="rejecting.set(m); rejectComment = ''">На доработку</button> }
-                            @if (u.canManage || u.canReview) { <button class="btn btn-sm btn-outline-secondary" (click)="toggleVisibility(m)">{{ m.visibleToStudents ? 'Скрыть' : 'Показать' }} обучающимся</button> }
-                            @if (u.canManage) { <button class="btn btn-sm btn-outline-danger" (click)="remove(m)">Удалить</button> }
+                            @if (u.canUpload || u.canReview) { <button class="btn btn-sm btn-outline-secondary" (click)="toggleVisibility(m)">{{ m.visibleToStudents ? 'Скрыть' : 'Показать' }} обучающимся</button> }
+                            @if (m.canDelete) { <button class="btn btn-sm btn-outline-danger" (click)="remove(m)">Удалить</button> }
                           </div>
                         </div>
                       }
@@ -153,8 +157,8 @@ export class UmkdTabComponent implements OnInit {
     this.expanded.set(s);
   }
 
-  openUpload() {
-    this.form = { componentTypeId: this.uploadable()[0]?.type.id ?? 0, title: '', description: '', url: '', visible: true };
+  openUpload(componentTypeId?: number) {
+    this.form = { componentTypeId: componentTypeId ?? this.uploadable()[0]?.type.id ?? 0, title: '', description: '', url: '', visible: true };
     this.file = null;
     this.syncVisibility();
     this.uploading.set(true);

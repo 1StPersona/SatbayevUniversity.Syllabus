@@ -266,6 +266,42 @@ public class ApiTests : IClassFixture<ApiFactory>
     }
 
     [Fact]
+    public async Task Umkd_upload_by_teacher_head_director_and_delete_rules()
+    {
+        async Task<HttpResponseMessage> Upload(HttpClient c, string title)
+        {
+            using var form = new MultipartFormDataContent
+            {
+                { new StringContent("3"), "componentTypeId" },
+                { new StringContent(title), "title" },
+                { new ByteArrayContent("slides"u8.ToArray()), "file", "slides.pdf" }
+            };
+            return await c.PostAsync("/api/syllabi/1/umkd", form);
+        }
+        var teacher = await As("teacher@esyllabus.local");   // преподаватель кафедры, не автор силлабуса 1
+        var head = await As("head@esyllabus.local");
+        var director = await As("director@esyllabus.local");
+        var student = await As("student@esyllabus.local");
+
+        var t = await Upload(teacher, "Слайды преподавателя");
+        Assert.Equal(HttpStatusCode.OK, t.StatusCode);
+        var teacherMaterial = await t.Content.ReadFromJsonAsync<JsonObject>();
+        Assert.True(teacherMaterial!["canDelete"]!.GetValue<bool>());
+        var h = await Upload(head, "Слайды заведующего");
+        Assert.Equal(HttpStatusCode.OK, h.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await Upload(director, "Слайды директора")).StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, (await Upload(student, "Нельзя")).StatusCode);
+
+        var umkd = await teacher.GetFromJsonAsync<JsonObject>("/api/syllabi/1/umkd");
+        Assert.True(umkd!["canUpload"]!.GetValue<bool>());
+
+        var headMaterialId = (await h.Content.ReadFromJsonAsync<JsonObject>())!["id"]!.GetValue<int>();
+        // Преподаватель не может удалить чужой материал, заведующий — может удалить материал преподавателя
+        Assert.Equal(HttpStatusCode.Forbidden, (await teacher.DeleteAsync($"/api/umkd/materials/{headMaterialId}")).StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, (await head.DeleteAsync($"/api/umkd/materials/{teacherMaterial["id"]!.GetValue<int>()}")).StatusCode);
+    }
+
+    [Fact]
     public async Task Umkd_rejects_bad_uploads()
     {
         var director = await As("director@esyllabus.local");

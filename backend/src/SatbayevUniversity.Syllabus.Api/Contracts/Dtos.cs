@@ -57,7 +57,7 @@ public record SyllabusListItemDto(int Id, string DisciplineCode, string Discipli
     int Course, int Semester, IReadOnlyList<string> Programs, string Lecturer, SyllabusStatus Status, string StatusName,
     DateTime UpdatedAt, bool IsMine, UmkdProgressDto? Umkd);
 
-public record PermissionsDto(bool CanEdit, bool CanDelete, bool CanClone, bool CanManageMaterials, bool CanReviewMaterials);
+public record PermissionsDto(bool CanEdit, bool CanDelete, bool CanClone, bool CanUploadMaterials, bool CanReviewMaterials);
 
 public record ActionDto(WorkflowAction Action, string Title);
 
@@ -109,23 +109,23 @@ public record CreatedDto(int Id);
 
 public record MaterialDto(int Id, int ComponentTypeId, string Title, string? Description, string? FileName, long FileSize,
     string? ExternalUrl, bool HasFile, bool VisibleToStudents, MaterialReviewStatus ReviewStatus, string ReviewStatusName,
-    string? ReviewComment, string UploadedByName, DateTime UploadedAt)
+    string? ReviewComment, string UploadedByName, DateTime UploadedAt, bool CanDelete)
 {
-    public static MaterialDto From(UmkdMaterial m) => new(m.Id, m.ComponentTypeId, m.Title, m.Description, m.OriginalFileName,
-        m.FileSize, m.ExternalUrl, m.StoredFileName != null, m.VisibleToStudents, m.ReviewStatus, m.ReviewStatus.DisplayName(),
-        m.ReviewComment, m.UploadedByName, m.UploadedAt);
+    public static MaterialDto From(UmkdMaterial m, bool canDelete = false) => new(m.Id, m.ComponentTypeId, m.Title, m.Description,
+        m.OriginalFileName, m.FileSize, m.ExternalUrl, m.StoredFileName != null, m.VisibleToStudents, m.ReviewStatus,
+        m.ReviewStatus.DisplayName(), m.ReviewComment, m.UploadedByName, m.UploadedAt, canDelete);
 }
 
 public record UmkdComponentDto(UmkdTypeDto Type, bool IsComplete, string StateText, IReadOnlyList<MaterialDto> Materials);
 
-public record UmkdDto(int SyllabusId, UmkdProgressDto Progress, bool CanManage, bool CanReview, IReadOnlyList<UmkdComponentDto> Components);
+public record UmkdDto(int SyllabusId, UmkdProgressDto Progress, bool CanUpload, bool CanReview, IReadOnlyList<UmkdComponentDto> Components);
 
 public record ReviewRequest(MaterialReviewStatus Status, string? Comment);
 
 public record VisibilityRequest(bool Visible);
 
 public record UmkdOverviewRowDto(int SyllabusId, string DisciplineCode, string DisciplineName, string Lecturer,
-    SyllabusStatus Status, string StatusName, UmkdProgressDto Progress, IReadOnlyList<string> Cells);
+    SyllabusStatus Status, string StatusName, UmkdProgressDto Progress, IReadOnlyList<string> Cells, bool CanUpload);
 
 public record UmkdOverviewDto(IReadOnlyList<string> Years, string? Year, IReadOnlyList<UmkdTypeDto> Types, IReadOnlyList<UmkdOverviewRowDto> Rows);
 

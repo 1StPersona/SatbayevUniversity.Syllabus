@@ -11,7 +11,7 @@ import { StatusBadgeComponent, UmkdProgressComponent } from '../shared/ui';
   imports: [FormsModule, RouterLink, StatusBadgeComponent, UmkdProgressComponent],
   template: `
   <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-    <div><h1 class="h3 mb-0">Комплектность УМКД</h1><div class="text-muted small">Состояние компонентов учебно-методических комплексов по дисциплинам</div></div>
+    <div><h1 class="h3 mb-0">Комплектность УМКД</h1><div class="text-muted small">Состояние компонентов учебно-методических комплексов по дисциплинам. Чтобы загрузить материалы, нажмите «Материалы» в строке дисциплины.</div></div>
     @if (data(); as d) {
       <div class="d-flex gap-2 align-items-center"><label for="year" class="small text-muted">Учебный год</label>
         <select id="year" class="form-select form-select-sm" [ngModel]="d.year" (ngModelChange)="load($event)">
@@ -25,7 +25,7 @@ import { StatusBadgeComponent, UmkdProgressComponent } from '../shared/ui';
       <table class="table table-sm table-bordered align-middle mb-0">
         <thead class="table-light"><tr><th style="min-width:220px">Дисциплина</th><th>Статус силлабуса</th>
           @for (t of d.types; track t.id) { <th class="text-center small" style="min-width:70px" [title]="t.description">{{ t.name }}{{ t.isRequired ? '' : '*' }}</th> }
-          <th style="min-width:120px">Итого</th></tr></thead>
+          <th style="min-width:120px">Итого</th><th></th></tr></thead>
         <tbody>
           @for (r of d.rows; track r.syllabusId) {
             <tr>
@@ -33,8 +33,10 @@ import { StatusBadgeComponent, UmkdProgressComponent } from '../shared/ui';
               <td><app-status [status]="r.status" /></td>
               @for (c of r.cells; track $index) { <td class="text-center" [title]="d.types[$index].name">{{ icons[c] }}</td> }
               <td><app-umkd-progress [value]="r.progress" /></td>
+              <td class="text-nowrap"><a class="btn btn-sm" [class.btn-primary]="r.canUpload" [class.btn-outline-secondary]="!r.canUpload"
+                  [routerLink]="['/syllabi', r.syllabusId]" [queryParams]="{tab:'umkd'}">{{ r.canUpload ? 'Материалы / загрузить' : 'Материалы' }}</a></td>
             </tr>
-          } @empty { <tr><td [attr.colspan]="d.types.length + 3" class="text-center text-muted py-4">Нет силлабусов за выбранный год.</td></tr> }
+          } @empty { <tr><td [attr.colspan]="d.types.length + 4" class="text-center text-muted py-4">Нет силлабусов за выбранный год.</td></tr> }
         </tbody>
       </table>
     </div></div>

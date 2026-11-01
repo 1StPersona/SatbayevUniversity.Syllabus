@@ -137,7 +137,7 @@ await step('преподаватель', async () => {
   await page.click('[data-test=umkd-add]');
   await page.fill('#title', 'Лекция 1. Введение');
   await page.setInputFiles('#file', { name: 'lecture1.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4 e2e') });
-  await page.click('button:has-text("Загрузить")');
+  await page.click('app-modal button[type=submit]');
   await page.waitForSelector('.alert-success:has-text("загружен")');
   check('материал УМКД загружен через интерфейс', true);
 });
@@ -163,6 +163,14 @@ await step('заведующий', async () => {
   await page.waitForSelector('table tbody tr td a');
   await shot(page, '06-umkd-overview');
   check('сводка комплектности УМКД открывается', await page.locator('table tbody tr').count() > 0);
+  // Заведующий загружает материал в силлабус, автором которого не является (CSE7942 — автор директор)
+  await page.goto(`${BASE}/syllabi/1?tab=umkd`);
+  await page.click('[data-test=umkd-add]');
+  await page.fill('#title', 'Методические указания кафедры');
+  await page.setInputFiles('#file', { name: 'metod.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4 head') });
+  await page.click('app-modal button[type=submit]');
+  await page.waitForSelector('.alert-success:has-text("загружен")');
+  check('заведующий загружает материал в чужой силлабус', true);
 });
 
 console.log('\n[Директор института]');
@@ -198,6 +206,7 @@ await step('обучающийся', async () => {
   await page.waitForSelector('text=Лекция 1. Введение');
   check('видит принятый материал УМКД', true);
   check('не видит кнопок согласования и редактирования', !(await page.isVisible('text=Редактировать')) && !(await page.isVisible('text=Согласование:')));
+  check('у обучающегося нет кнопки загрузки', !(await page.isVisible('[data-test=umkd-add]')));
   await page.goto(`${BASE}/admin`);
   await page.waitForSelector('text=Недостаточно прав');
   check('/admin для обучающегося → «Недостаточно прав»', true);

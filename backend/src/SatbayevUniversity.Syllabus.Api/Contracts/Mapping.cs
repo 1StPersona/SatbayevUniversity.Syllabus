@@ -57,7 +57,7 @@ public static class Mapping
                 : null,
             Permissions = new PermissionsDto(
                 AccessPolicy.CanEdit(u, s), AccessPolicy.CanDelete(u, s), AccessPolicy.CanClone(u, s),
-                AccessPolicy.CanManageMaterials(u, s), AccessPolicy.CanReviewMaterials(u, s)),
+                AccessPolicy.CanUploadMaterials(u, s), AccessPolicy.CanReviewMaterials(u, s)),
             Actions = WorkflowService.AvailableActions(u, s).Distinct()
                 .Select(a => new ActionDto(a, WorkflowService.Title(a))).ToList(),
             Issues = u.IsStaff ? SyllabusValidator.Validate(s).Select(IssueDto.From).ToList() : Array.Empty<IssueDto>(),

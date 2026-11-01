@@ -78,9 +78,22 @@ public static class AccessPolicy
 
     // ---- УМКД ----
 
-    /// <summary>Загружать материалы УМКД может автор силлабуса (кроме архивного) и администратор.</summary>
-    public static bool CanManageMaterials(UserContext u, CourseSyllabus s) =>
-        s.Status != SyllabusStatus.Archived && (u.IsAdmin || IsAuthor(u, s));
+    /// <summary>
+    /// Загружать материалы УМКД могут все сотрудники, причастные к дисциплине: автор силлабуса,
+    /// преподаватели кафедры, заведующий кафедрой, директор института и администратор (кроме архивных силлабусов).
+    /// </summary>
+    public static bool CanUploadMaterials(UserContext u, CourseSyllabus s) =>
+        s.Status != SyllabusStatus.Archived &&
+        (u.IsAdmin || IsAuthor(u, s) || IsHeadOf(u, s) || IsDirectorOf(u, s) ||
+         (u.Is(Roles.Teacher) && u.DepartmentId != null && u.DepartmentId == DeptOf(s)));
+
+    /// <summary>Удалить материал может загрузивший его, автор силлабуса, заведующий кафедрой и администратор.</summary>
+    public static bool CanDeleteMaterial(UserContext u, CourseSyllabus s, UmkdMaterial m) =>
+        s.Status != SyllabusStatus.Archived &&
+        (u.IsAdmin || IsAuthor(u, s) || IsHeadOf(u, s) || (u.IsAuthenticated && m.UploadedById == u.UserId));
+
+    /// <summary>Видимость материала для обучающихся меняют загружающие и проверяющие.</summary>
+    public static bool CanChangeVisibility(UserContext u, CourseSyllabus s) => CanUploadMaterials(u, s) || CanReviewMaterials(u, s);
 
     public static bool CanReviewMaterials(UserContext u, CourseSyllabus s) => u.IsAdmin || IsHeadOf(u, s);
 

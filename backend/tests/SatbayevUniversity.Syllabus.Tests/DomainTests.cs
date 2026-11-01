@@ -178,6 +178,32 @@ public class DomainTests
     }
 
     [Fact]
+    public void Upload_is_allowed_to_department_staff_head_and_director()
+    {
+        var s = Sample(SyllabusStatus.Approved);
+        Assert.True(AccessPolicy.CanUploadMaterials(User("author", 10, 1, Roles.Teacher), s));
+        Assert.True(AccessPolicy.CanUploadMaterials(User("colleague", 10, 1, Roles.Teacher), s));
+        Assert.True(AccessPolicy.CanUploadMaterials(User("h", 10, 1, Roles.HeadOfDepartment), s));
+        Assert.True(AccessPolicy.CanUploadMaterials(User("d", null, 1, Roles.Director), s));
+        Assert.True(AccessPolicy.CanUploadMaterials(User("a", null, null, Roles.Admin), s));
+        Assert.False(AccessPolicy.CanUploadMaterials(User("x", 99, 2, Roles.Teacher), s));
+        Assert.False(AccessPolicy.CanUploadMaterials(new UserContext("st", "С", new HashSet<string> { Roles.Student }, null, null, 1), s));
+        Assert.False(AccessPolicy.CanUploadMaterials(User("author", 10, 1, Roles.Teacher), Sample(SyllabusStatus.Archived)));
+    }
+
+    [Fact]
+    public void Material_is_deleted_by_uploader_author_head_or_admin()
+    {
+        var s = Sample(SyllabusStatus.Approved);
+        var m = new UmkdMaterial { UploadedById = "colleague" };
+        Assert.True(AccessPolicy.CanDeleteMaterial(User("colleague", 10, 1, Roles.Teacher), s, m));
+        Assert.True(AccessPolicy.CanDeleteMaterial(User("author", 10, 1, Roles.Teacher), s, m));
+        Assert.True(AccessPolicy.CanDeleteMaterial(User("h", 10, 1, Roles.HeadOfDepartment), s, m));
+        Assert.False(AccessPolicy.CanDeleteMaterial(User("other", 10, 1, Roles.Teacher), s, m));
+        Assert.False(AccessPolicy.CanDeleteMaterial(User("d", null, 1, Roles.Director), s, m));
+    }
+
+    [Fact]
     public void Workflow_actions_by_role()
     {
         var author = User("author", 10, 1, Roles.Teacher);

@@ -83,20 +83,20 @@ export interface SyllabusDetails {
   protocolNumber?: string | null; protocolDate?: string | null; approvedByName?: string | null; approvedByTitle?: string | null;
   approvedDate?: string | null; authorName: string; createdAt: string; updatedAt: string; ratingTotal: number; finalTotal: number;
   returnComment?: string | null;
-  permissions: { canEdit: boolean; canDelete: boolean; canClone: boolean; canManageMaterials: boolean; canReviewMaterials: boolean };
+  permissions: { canEdit: boolean; canDelete: boolean; canClone: boolean; canUploadMaterials: boolean; canReviewMaterials: boolean };
   actions: { action: WorkflowAction; title: string }[]; issues: IssueDto[]; history: HistoryDto[]; umkd: UmkdProgressDto;
 }
 
 export interface MaterialDto {
   id: number; componentTypeId: number; title: string; description?: string | null; fileName?: string | null; fileSize: number;
   externalUrl?: string | null; hasFile: boolean; visibleToStudents: boolean; reviewStatus: MaterialReviewStatus;
-  reviewStatusName: string; reviewComment?: string | null; uploadedByName: string; uploadedAt: string;
+  reviewStatusName: string; reviewComment?: string | null; uploadedByName: string; uploadedAt: string; canDelete: boolean;
 }
 export interface UmkdComponentDto { type: UmkdTypeDto; isComplete: boolean; stateText: string; materials: MaterialDto[]; }
-export interface UmkdDto { syllabusId: number; progress: UmkdProgressDto; canManage: boolean; canReview: boolean; components: UmkdComponentDto[]; }
+export interface UmkdDto { syllabusId: number; progress: UmkdProgressDto; canUpload: boolean; canReview: boolean; components: UmkdComponentDto[]; }
 export interface UmkdOverviewRow {
   syllabusId: number; disciplineCode: string; disciplineName: string; lecturer: string; status: SyllabusStatus;
-  statusName: string; progress: UmkdProgressDto; cells: ('done' | 'pending' | 'rejected' | 'missing' | 'optional')[];
+  statusName: string; progress: UmkdProgressDto; cells: ('done' | 'pending' | 'rejected' | 'missing' | 'optional')[]; canUpload: boolean;
 }
 export interface UmkdOverviewDto { years: string[]; year?: string | null; types: UmkdTypeDto[]; rows: UmkdOverviewRow[]; }
 

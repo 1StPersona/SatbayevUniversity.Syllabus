@@ -42,9 +42,10 @@ public class UmkdController : ControllerBase
         var summary = UmkdService.Summarize(s, await _umkd.TypesAsync());
         var components = summary.Components
             .Where(c => u.IsStaff || c.Type.IsSyllabus || c.Materials.Count > 0)
-            .Select(c => new UmkdComponentDto(c.Type.ToDto(), c.IsComplete, c.StateText, c.Materials.Select(MaterialDto.From).ToList()))
+            .Select(c => new UmkdComponentDto(c.Type.ToDto(), c.IsComplete, c.StateText,
+                c.Materials.Select(m => MaterialDto.From(m, AccessPolicy.CanDeleteMaterial(u, s, m))).ToList()))
             .ToList();
-        return new UmkdDto(s.Id, UmkdProgressDto.From(summary), AccessPolicy.CanManageMaterials(u, s),
+        return new UmkdDto(s.Id, UmkdProgressDto.From(summary), AccessPolicy.CanUploadMaterials(u, s),
             AccessPolicy.CanReviewMaterials(u, s), components);
     }
 
@@ -57,7 +58,7 @@ public class UmkdController : ControllerBase
         var u = await _me.GetAsync();
         var s = await _syllabi.LoadFullAsync(syllabusId);
         if (s == null) return NotFound();
-        if (!AccessPolicy.CanManageMaterials(u, s)) return Forbid();
+        if (!AccessPolicy.CanUploadMaterials(u, s)) return Forbid();
 
         var type = await _db.UmkdComponentTypes.FindAsync(componentTypeId);
         await using var stream = file?.OpenReadStream();
@@ -70,7 +71,7 @@ public class UmkdController : ControllerBase
         if (error != null) return Problem(title: error, statusCode: 400);
 
         var m = await _umkd.AddAsync(u, s, componentTypeId, title!, description, upload, url, visibleToStudents);
-        return MaterialDto.From(m);
+        return MaterialDto.From(m, AccessPolicy.CanDeleteMaterial(u, s, m));
     }
 
     [HttpDelete("api/umkd/materials/{id:int}"), Authorize(Policy = "Staff")]
@@ -78,7 +79,7 @@ public class UmkdController : ControllerBase
     {
         var (u, s, m) = await LoadAsync(id);
         if (m == null || s == null) return NotFound();
-        if (!AccessPolicy.CanManageMaterials(u, s)) return Forbid();
+        if (!AccessPolicy.CanDeleteMaterial(u, s, m)) return Forbid();
         await _umkd.DeleteAsync(m);
         return NoContent();
     }
@@ -93,7 +94,7 @@ public class UmkdController : ControllerBase
         if (req.Status == MaterialReviewStatus.Rejected && string.IsNullOrWhiteSpace(req.Comment))
             return Problem(title: "Укажите, что нужно доработать.", statusCode: 400);
         await _umkd.ReviewAsync(m, req.Status, req.Comment);
-        return MaterialDto.From(m);
+        return MaterialDto.From(m, AccessPolicy.CanDeleteMaterial(u, s, m));
     }
 
     [HttpPost("api/umkd/materials/{id:int}/visibility"), Authorize(Policy = "Staff")]
@@ -101,10 +102,10 @@ public class UmkdController : ControllerBase
     {
         var (u, s, m) = await LoadAsync(id);
         if (m == null || s == null) return NotFound();
-        if (!AccessPolicy.CanManageMaterials(u, s) && !AccessPolicy.CanReviewMaterials(u, s)) return Forbid();
+        if (!AccessPolicy.CanChangeVisibility(u, s)) return Forbid();
         m.VisibleToStudents = req.Visible;
         await _db.SaveChangesAsync();
-        return MaterialDto.From(m);
+        return MaterialDto.From(m, AccessPolicy.CanDeleteMaterial(u, s, m));
     }
 
     [HttpGet("api/umkd/materials/{id:int}/download")]
@@ -157,7 +158,7 @@ public class UmkdController : ControllerBase
                 : c.Materials.Count > 0 ? "rejected"
                 : c.Type.IsRequired ? "missing" : "optional").ToList();
             return new UmkdOverviewRowDto(s.Id, s.Discipline!.Code, s.Discipline.Name, s.Lecturer.FullName, s.Status,
-                s.Status.DisplayName(), UmkdProgressDto.From(sum), cells);
+                s.Status.DisplayName(), UmkdProgressDto.From(sum), cells, AccessPolicy.CanUploadMaterials(u, s));
         }).ToList();
         return new UmkdOverviewDto(years, year, types.Select(t => t.ToDto()).ToList(), rows);
     }
