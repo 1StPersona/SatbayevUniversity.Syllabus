@@ -35,6 +35,7 @@ import { describeHttpError } from '../core/http-error';
       <div class="card mt-3 login-card small">
         <div class="card-body">
           <div class="fw-semibold mb-2">Демо-учётные записи (пароль <code>Demo123!</code>)</div>
+          <div class="text-muted mb-2">Пароль администратора — значение <code>ADMIN_PASSWORD</code> из файла <code>.env</code>, если оно задано.</div>
           @for (d of demo; track d[0]) {
             <div class="d-flex justify-content-between"><a href="" (click)="$event.preventDefault(); email = d[0]; password = 'Demo123!'">{{ d[0] }}</a><span class="text-muted">{{ d[1] }}</span></div>
           }
